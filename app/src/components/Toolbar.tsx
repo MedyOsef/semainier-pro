@@ -2,6 +2,7 @@ import { Plus, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Props {
   onNewTask?: () => void;
+  newTaskLabel?: string;
   onSuggestions?: () => void;
   showSuggestions?: boolean;
   weekLabel?: string;
@@ -15,6 +16,7 @@ interface Props {
 
 export function Toolbar({
   onNewTask,
+  newTaskLabel = 'Nouvelle tâche',
   onSuggestions,
   showSuggestions = true,
   weekLabel,
@@ -36,7 +38,7 @@ export function Toolbar({
 
       {onNewTask && (
         <button className="btn-primary" onClick={onNewTask}>
-          <Plus size={16} /> Nouvelle tâche
+          <Plus size={16} /> {newTaskLabel}
         </button>
       )}
 

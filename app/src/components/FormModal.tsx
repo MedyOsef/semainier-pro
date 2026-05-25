@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useMemo } from 'react';
 import { X, Plus, Clock, Bell, AlertTriangle } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import { CATEGORIES, PRIORITIES, STATUSES } from '@/types';
@@ -7,6 +7,7 @@ import { SUGGESTIONS } from '@/lib/data';
 import type { Category, Priority } from '@/types';
 import { CategoryBadge } from './CategoryBadge';
 import { PriorityDot } from './PriorityDot';
+import { randomColor } from '@/lib/utils';
 
 export function FormModal() {
   const { modal, editData, closeModal } = useStore();
@@ -284,6 +285,7 @@ function ClientForm({ client, onClose }: { client: import('@/types').Client | nu
 function CollaboratorForm({ collaborator, onClose }: { collaborator: import('@/types').Collaborator | null; onClose: () => void }) {
   const { addCollaborator, updateCollaborator } = useStore.getState();
   const formRef = useRef<HTMLFormElement>(null);
+  const initialColor = useMemo(() => collaborator?.color || randomColor(), [collaborator]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -323,7 +325,7 @@ function CollaboratorForm({ collaborator, onClose }: { collaborator: import('@/t
       </div>
       <div>
         <label className="text-[11px] font-semibold uppercase text-[var(--txt2)] mb-1.5 block">Couleur</label>
-        <input name="color" type="color" defaultValue={collaborator?.color || '#4f6ef7'} className="input-field h-[38px] p-1 cursor-pointer" />
+        <input name="color" type="color" defaultValue={initialColor} className="input-field h-[38px] p-1 cursor-pointer" />
       </div>
       <div className="flex justify-end gap-3 pt-4 border-t" style={{ borderColor: 'var(--bor)' }}>
         <button type="button" className="btn-secondary" onClick={onClose}>Annuler</button>

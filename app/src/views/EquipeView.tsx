@@ -11,6 +11,7 @@ export function EquipeView() {
       <Toolbar
         title="Gestion de l'équipe"
         onNewTask={() => openModal('collaborateur', { collaborator: null })}
+        newTaskLabel="Nouveau collaborateur"
         showSuggestions={false}
       />
 
