@@ -80,7 +80,7 @@ export function MoisView() {
                 className="min-h-[110px] p-2 cursor-pointer transition-colors duration-200"
                 style={{
                   background: isToday
-                    ? 'rgba(248,236,233,0.5)'
+                    ? 'rgba(79, 110, 247, 0.08)'
                     : 'var(--bg2)',
                   opacity: isCurrentMonth ? 1 : 0.4,
                   border: isToday ? '2px solid var(--terracotta)' : undefined,
@@ -112,8 +112,8 @@ export function MoisView() {
                 {dayTasks.slice(0, 2).map((t, i) => (
                   <div
                     key={i}
-                    className="text-[10px] px-1.5 py-0.5 rounded mb-0.5 truncate"
-                    style={{ background: `${CAT_COLORS[t.category]}18`, color: CAT_COLORS[t.category] }}
+                    className="text-[10px] px-1.5 py-0.5 rounded mb-0.5 truncate font-medium"
+                    style={{ background: `${CAT_COLORS[t.category]}28`, color: isToday ? CAT_COLORS[t.category] : CAT_COLORS[t.category] }}
                   >
                     {t.title.slice(0, 20)}
                   </div>

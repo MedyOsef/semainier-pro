@@ -117,7 +117,7 @@ function TaskForm({ task, onClose }: { task: Task | null; onClose: () => void })
       assignedTo,
     };
 
-    if (task) {
+    if (task && task.id) {
       updateTask({ ...task, ...data });
     } else {
       addTask(data);

@@ -59,7 +59,7 @@ export function AppHeader() {
                 onClick={() => setView(tab.id)}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-medium uppercase tracking-wider transition-all duration-200 ${
                   isActive
-                    ? 'text-white'
+                    ? 'text-white dark:text-[#0f172a]'
                     : 'text-[var(--txt2)] hover:text-[var(--txt)]'
                 }`}
                 style={isActive ? { background: 'var(--deep-blue)' } : {}}
