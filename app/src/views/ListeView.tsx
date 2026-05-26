@@ -1,4 +1,4 @@
-import { Search, Pencil, Trash2 } from 'lucide-react';
+import { Search, Pencil, Trash2, Mail } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import { formatDate, parseKey } from '@/lib/dateUtils';
 import { Toolbar } from '@/components/Toolbar';
@@ -92,12 +92,33 @@ export function ListeView() {
                   ) : '-'}
                 </div>
                 <div className="flex gap-1">
-                  <button className="icon-btn w-7 h-7" onClick={() => openModal('task', { task: { ...t } })}>
+                  <button className="icon-btn w-7 h-7" title="Éditer" onClick={() => openModal('task', { task: { ...t } })}>
                     <Pencil size={13} />
                   </button>
+                  {assigned.length > 0 && (
+                    <button
+                      className="icon-btn w-7 h-7 hover:bg-blue-50 hover:text-blue-500"
+                      onClick={() => {
+                        const firstAssigned = assigned[0];
+                        if (firstAssigned) {
+                          openModal('reminder', {
+                            reminder: {
+                              task: t,
+                              collaborator: firstAssigned,
+                              message: '',
+                            },
+                          });
+                        }
+                      }}
+                      title="Relancer ce collaborateur"
+                    >
+                      <Mail size={13} />
+                    </button>
+                  )}
                   <button
                     className="icon-btn w-7 h-7 hover:bg-red-50 hover:text-red-500"
                     onClick={() => { if (confirm('Supprimer cette tâche ?')) deleteTask(t.id); }}
+                    title="Supprimer"
                   >
                     <Trash2 size={13} />
                   </button>

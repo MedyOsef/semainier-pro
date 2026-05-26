@@ -7,6 +7,7 @@ import { SUGGESTIONS } from '@/lib/data';
 import type { Category, Priority } from '@/types';
 import { CategoryBadge } from './CategoryBadge';
 import { PriorityDot } from './PriorityDot';
+import { ReminderModal } from './ReminderModal';
 import { randomColor } from '@/lib/utils';
 
 export function FormModal() {
@@ -58,6 +59,7 @@ export function FormModal() {
             {modal === 'suggestions' && 'Suggestions intelligentes'}
             {modal === 'notifs' && 'Notifications'}
             {modal === 'confirmation' && editData.confirmation?.title}
+            {modal === 'reminder' && 'Relancer le collaborateur'}
           </h3>
           <button onClick={closeModal} className="icon-btn">
             <X size={17} />
@@ -79,6 +81,13 @@ export function FormModal() {
                 closeModal();
               }}
               onCancel={closeModal}
+            />
+          )}
+          {modal === 'reminder' && editData.reminder?.task && editData.reminder?.collaborator && (
+            <ReminderModal
+              task={editData.reminder.task}
+              collaborator={editData.reminder.collaborator}
+              onClose={closeModal}
             />
           )}
         </div>

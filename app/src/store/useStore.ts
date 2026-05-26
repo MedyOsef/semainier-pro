@@ -1,15 +1,24 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Task, Client, Collaborator, Notification, ViewName, ModalType, Status } from '@/types';
+import type { Task, Client, Collaborator, Notification, ViewName, ModalType, Status, Reminder } from '@/types';
+import { sendEmail } from '@/lib/emailService';
+import { generateReminderMessage } from '@/lib/reminderMessages';
 import { DEFAULT_CLIENTS, DEFAULT_COLLABORATORS, SUGGESTIONS, generateId } from '@/lib/data';
 import { getInitialWeek, dateKey } from '@/lib/dateUtils';
 import { indexedStorage } from '@/lib/indexedStorage';
+
+interface ReminderData {
+  task: Task | null;
+  collaborator: Collaborator | null;
+  message: string;
+}
 
 interface EditData {
   task: Task | null;
   client: Client | null;
   collaborator: Collaborator | null;
   confirmation: { title: string; message: string; onConfirm: () => void } | null;
+  reminder: ReminderData | null;
 }
 
 interface AppState {
@@ -22,6 +31,7 @@ interface AppState {
   clients: Client[];
   collaborators: Collaborator[];
   notifications: Notification[];
+  reminders: Reminder[];
   calendars: import('../types').Calendar[];
 
   // Navigation
@@ -65,6 +75,9 @@ interface AppState {
   updateCollaborator: (c: Collaborator) => void;
   deleteCollaborator: (id: string) => void;
 
+  // Actions - Reminders
+  sendReminder: (taskId: string, collaboratorId: string, customNote?: string) => Promise<boolean>;
+
   // Calendars
   addCalendar: (c: Omit<import('../types').Calendar, 'id'>) => void;
   updateCalendar: (c: import('../types').Calendar) => void;
@@ -95,6 +108,7 @@ export const useStore = create<AppState>()(
       clients: DEFAULT_CLIENTS,
       collaborators: DEFAULT_COLLABORATORS,
       notifications: [],
+      reminders: [],
       calendars: [
         { id: 'cal_main', name: 'Mon calendrier', color: '#4f6ef7', visible: true },
         { id: 'cal_personnel', name: 'Personnel', color: '#4f6ef7', visible: true },
@@ -116,9 +130,9 @@ export const useStore = create<AppState>()(
       clearFilters: () => set({ filterCat: '', filterStatus: '', filterClient: '', filterCollab: '', search: '' }),
 
       modal: null,
-      editData: { task: null, client: null, collaborator: null, confirmation: null },
+      editData: { task: null, client: null, collaborator: null, confirmation: null, reminder: null },
       openModal: (type, data) => set({ modal: type, editData: { ...get().editData, ...data } }),
-      closeModal: () => set({ modal: null, editData: { task: null, client: null, collaborator: null, confirmation: null } }),
+      closeModal: () => set({ modal: null, editData: { task: null, client: null, collaborator: null, confirmation: null, reminder: null } }),
 
       addTask: (task) => {
         const newTask: Task = { ...task, id: generateId('t') };
@@ -202,6 +216,60 @@ export const useStore = create<AppState>()(
           ),
         }));
         get().notify('Collaborateur supprimé', 'success');
+      },
+
+      sendReminder: async (taskId, collaboratorId, customNote) => {
+        const collaborator = get().collaborators.find((c) => c.id === collaboratorId) || null;
+        const task = get().tasks.find((t) => t.id === taskId) || null;
+        const client = task?.client ? get().clients.find((c) => c.id === task.client) : null;
+
+        if (!task || !collaborator) {
+          get().notify('Erreur: Tâche ou collaborateur introuvable', 'error');
+          return false;
+        }
+
+        // Générer le message formaté selon le statut
+        let emailMessage = generateReminderMessage(task, collaborator, client);
+        
+        // Ajouter la note personnalisée si elle existe
+        if (customNote?.trim()) {
+          emailMessage += `\n\n---\nNote personnalisée :\n${customNote}`;
+        }
+
+        const to_email = collaborator.email;
+        const to_name = collaborator.name;
+        const subject = `Relance: ${task.title}`;
+
+        try {
+          const result = await sendEmail({
+            to_email,
+            to_name,
+            subject,
+            message: emailMessage,
+            reply_to: '',
+          });
+
+          if (result.success) {
+            const reminder: Reminder = {
+              id: generateId('rem'),
+              taskId,
+              collaboratorId,
+              message: emailMessage,
+              sentAt: new Date().toISOString(),
+            };
+            set((s) => ({ reminders: [reminder, ...s.reminders] }));
+            get().notify('Relance envoyée avec succès', 'success');
+            return true;
+          } else {
+            get().notify(`Erreur envoi relance: ${result.message}`, 'error');
+            return false;
+          }
+        } catch (err) {
+          const errMsg = err instanceof Error ? err.message : 'Erreur inconnue';
+          console.error('sendReminder error', errMsg);
+          get().notify('Erreur lors de l\'envoi de la relance', 'error');
+          return false;
+        }
       },
 
       addCalendar: (c) => {

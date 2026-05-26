@@ -48,7 +48,15 @@ export type Category = 'Fiscal' | 'Social' | 'Comptabilité' | 'Juridique' | 'Re
 export type Priority = 'Haute' | 'Moyenne' | 'Basse';
 export type Status = 'À faire' | 'En cours' | 'Terminé';
 export type ViewName = 'semainier' | 'mois' | 'liste' | 'stats' | 'equipe' | 'kpi' | 'admin';
-export type ModalType = 'task' | 'client' | 'collaborateur' | 'suggestions' | 'notifs' | 'confirmation' | null;
+export type ModalType = 'task' | 'client' | 'collaborateur' | 'suggestions' | 'notifs' | 'confirmation' | 'reminder' | null;
+
+export interface Reminder {
+  id: string;
+  taskId: string;
+  collaboratorId: string;
+  message: string;
+  sentAt: string;
+}
 
 export const CATEGORIES: Category[] = ['Fiscal', 'Social', 'Comptabilité', 'Juridique', 'Reporting', 'États financiers', 'Administratif', 'Personnel'];
 export const PRIORITIES: Priority[] = ['Haute', 'Moyenne', 'Basse'];
