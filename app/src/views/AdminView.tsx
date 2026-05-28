@@ -10,7 +10,6 @@ import {
   BarChart3,
   AlertTriangle,
   RotateCcw,
-  TrendingUp,
 } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 
@@ -46,13 +45,6 @@ export function AdminView() {
   };
 
   const overdueCount = tasks.filter((t) => t.deadline && new Date(t.deadline) < new Date() && t.status !== 'Terminé').length;
-
-  const phases = [
-    { num: 1, title: 'Semainier Annuel', status: 'Actif', col: 'var(--success)', desc: 'Planning hebdomadaire intelligent avec gestion complète des tâches, collaborateurs et KPI' },
-    { num: 2, title: 'Gestion Cabinet', status: 'À venir', col: 'var(--warning)', desc: 'Facturation, devis, suivi temps passé, archives clients' },
-    { num: 3, title: 'Intégration ERP', status: 'Planifié', col: 'var(--terracotta-mid)', desc: 'Comptabilité, trésorerie, achats/ventes, reporting avancé' },
-    { num: 4, title: 'Collaboration', status: 'Vision', col: 'var(--terracotta)', desc: 'Chat équipe, vidéo, partage fichiers, gestion projets' },
-  ];
 
   return (
     <div>
@@ -250,35 +242,6 @@ export function AdminView() {
             </button>
           </div>
         </div>
-      </div>
-
-      {/* Roadmap */}
-      <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
-        <TrendingUp size={14} /> Feuille de route
-      </h3>
-      <div className="flex flex-col gap-3">
-        {phases.map((p) => (
-          <div key={p.num} className="card-surface p-5 flex items-start gap-4">
-            <div
-              className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0"
-              style={{ background: p.col }}
-            >
-              P{p.num}
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-1">
-                <span className="text-base font-bold">{p.title}</span>
-                <span
-                  className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full"
-                  style={{ background: `${p.col}20`, color: p.col }}
-                >
-                  {p.status}
-                </span>
-              </div>
-              <p className="text-xs text-[var(--txt2)]">{p.desc}</p>
-            </div>
-          </div>
-        ))}
       </div>
     </div>
   );
