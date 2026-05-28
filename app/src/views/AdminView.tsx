@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import {
   Settings,
   Briefcase,
@@ -15,7 +15,10 @@ import {
 import { useStore } from '@/store/useStore';
 
 export function AdminView() {
-  const { tasks, clients, collaborators, openModal, exportData, importData, resetTasks, resetClients, resetCollaborators, deleteClient } = useStore();
+  const { tasks, clients, collaborators, openModal, exportData, importData, resetTasks, resetClients, resetCollaborators, deleteClient, emailJsConfig, setEmailJsConfig, notify } = useStore();
+  const [publicKey, setPublicKey] = useState(emailJsConfig.publicKey);
+  const [serviceId, setServiceId] = useState(emailJsConfig.serviceId);
+  const [templateId, setTemplateId] = useState(emailJsConfig.templateId);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,6 +38,11 @@ export function AdminView() {
     openModal('confirmation', {
       confirmation: { title, message, onConfirm: action },
     });
+  };
+
+  const handleSaveEmailJsConfig = () => {
+    setEmailJsConfig({ publicKey, serviceId, templateId });
+    notify('Paramètres EmailJS enregistrés', 'success');
   };
 
   const overdueCount = tasks.filter((t) => t.deadline && new Date(t.deadline) < new Date() && t.status !== 'Terminé').length;
@@ -121,6 +129,51 @@ export function AdminView() {
             />
             <p className="text-xs text-[var(--txt2)] mt-1">
               Les données sont sauvegardées automatiquement toutes les 60 secondes.
+            </p>
+          </div>
+        </div>
+
+        {/* EmailJS configuration card */}
+        <div className="card-surface p-5">
+          <h3 className="text-sm font-bold flex items-center gap-2 mb-4">
+            <Settings size={16} /> Configuration EmailJS
+          </h3>
+          <div className="grid gap-3">
+            <div>
+              <label className="text-[11px] font-semibold uppercase text-[var(--txt2)] mb-2 block">Clef publique EmailJS</label>
+              <input
+                type="text"
+                value={publicKey}
+                onChange={(e) => setPublicKey(e.target.value)}
+                className="input-field w-full"
+                placeholder="VITE_EMAILJS_PUBLIC_KEY"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold uppercase text-[var(--txt2)] mb-2 block">Service ID</label>
+              <input
+                type="text"
+                value={serviceId}
+                onChange={(e) => setServiceId(e.target.value)}
+                className="input-field w-full"
+                placeholder="VITE_EMAILJS_SERVICE_ID"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold uppercase text-[var(--txt2)] mb-2 block">Template ID</label>
+              <input
+                type="text"
+                value={templateId}
+                onChange={(e) => setTemplateId(e.target.value)}
+                className="input-field w-full"
+                placeholder="VITE_EMAILJS_TEMPLATE_ID"
+              />
+            </div>
+            <button className="btn-primary mt-2" onClick={handleSaveEmailJsConfig}>
+              Enregistrer la configuration EmailJS
+            </button>
+            <p className="text-xs text-[var(--txt2)]">
+              Ces paramètres seront enregistrés localement dans votre navigateur et utilisés pour l'envoi des relances.
             </p>
           </div>
         </div>

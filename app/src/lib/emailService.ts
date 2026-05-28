@@ -1,21 +1,28 @@
 import emailjs from '@emailjs/browser';
 
+export interface EmailJSConfig {
+  publicKey: string;
+  serviceId: string;
+  templateId: string;
+}
+
 /**
  * Configuration des variables d'environnement
- * Ajoutez celles-ci dans votre fichier .env:
+ * Ajoutez celles-ci dans votre fichier .env si nécessaire:
  * VITE_EMAILJS_SERVICE_ID=your_service_id
  * VITE_EMAILJS_TEMPLATE_ID=your_template_id
  * VITE_EMAILJS_PUBLIC_KEY=your_public_key
  */
 
-// Initialiser EmailJS avec votre clé publique
-const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+const ENV_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+const ENV_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+const ENV_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
 
-if (PUBLIC_KEY) {
-  emailjs.init(PUBLIC_KEY);
-}
+const initEmailJS = (publicKey: string) => {
+  if (publicKey) {
+    emailjs.init(publicKey);
+  }
+};
 
 export interface EmailParams {
   to_email: string;
@@ -29,17 +36,28 @@ export interface EmailParams {
 /**
  * Envoie un email via EmailJS
  * @param params Les paramètres de l'email
+ * @param config Configuration EmailJS optionnelle (préférée)
  * @returns Promise avec le résultat de l'envoi
  */
-export const sendEmail = async (params: EmailParams) => {
+export const sendEmail = async (params: EmailParams, config?: EmailJSConfig) => {
   try {
-    if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
+    const publicKey = config?.publicKey || ENV_PUBLIC_KEY;
+    const serviceId = config?.serviceId || ENV_SERVICE_ID;
+    const templateId = config?.templateId || ENV_TEMPLATE_ID;
+
+    if (!serviceId || !templateId || !publicKey) {
       throw new Error(
-        'EmailJS configuration manquante. Veuillez configurer les variables d\'environnement.'
+        'EmailJS configuration manquante. Veuillez configurer votre clé publique, service et template.'
       );
     }
 
-    const response = await emailjs.send(SERVICE_ID, TEMPLATE_ID, params);
+    if (config?.publicKey) {
+      initEmailJS(config.publicKey);
+    } else {
+      initEmailJS(publicKey);
+    }
+
+    const response = await emailjs.send(serviceId, templateId, params);
     return {
       success: true,
       messageId: response.status === 200,

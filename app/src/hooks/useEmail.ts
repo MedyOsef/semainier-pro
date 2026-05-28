@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import { sendEmail, EmailParams } from '../lib/emailService';
+import { sendEmail } from '../lib/emailService';
+import type { EmailParams } from '../lib/emailService';
 
 interface UseEmailOptions {
   onSuccess?: () => void;

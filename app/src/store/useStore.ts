@@ -21,6 +21,12 @@ interface EditData {
   reminder: ReminderData | null;
 }
 
+interface EmailJsConfig {
+  publicKey: string;
+  serviceId: string;
+  templateId: string;
+}
+
 interface AppState {
   // Theme
   darkMode: boolean;
@@ -75,6 +81,10 @@ interface AppState {
   updateCollaborator: (c: Collaborator) => void;
   deleteCollaborator: (id: string) => void;
 
+  // EmailJS configuration
+  emailJsConfig: EmailJsConfig;
+  setEmailJsConfig: (config: EmailJsConfig) => void;
+
   // Actions - Reminders
   sendReminder: (taskId: string, collaboratorId: string, customNote?: string) => Promise<boolean>;
 
@@ -109,6 +119,11 @@ export const useStore = create<AppState>()(
       collaborators: DEFAULT_COLLABORATORS,
       notifications: [],
       reminders: [],
+      emailJsConfig: {
+        publicKey: '',
+        serviceId: '',
+        templateId: '',
+      },
       calendars: [
         { id: 'cal_main', name: 'Mon calendrier', color: '#4f6ef7', visible: true },
         { id: 'cal_personnel', name: 'Personnel', color: '#4f6ef7', visible: true },
@@ -218,6 +233,8 @@ export const useStore = create<AppState>()(
         get().notify('Collaborateur supprimé', 'success');
       },
 
+      setEmailJsConfig: (config) => set({ emailJsConfig: config }),
+
       sendReminder: async (taskId, collaboratorId, customNote) => {
         const collaborator = get().collaborators.find((c) => c.id === collaboratorId) || null;
         const task = get().tasks.find((t) => t.id === taskId) || null;
@@ -239,15 +256,19 @@ export const useStore = create<AppState>()(
         const to_email = collaborator.email;
         const to_name = collaborator.name;
         const subject = `Relance: ${task.title}`;
+        const config = get().emailJsConfig;
 
         try {
-          const result = await sendEmail({
-            to_email,
-            to_name,
-            subject,
-            message: emailMessage,
-            reply_to: '',
-          });
+          const result = await sendEmail(
+            {
+              to_email,
+              to_name,
+              subject,
+              message: emailMessage,
+              reply_to: '',
+            },
+            config
+          );
 
           if (result.success) {
             const reminder: Reminder = {
@@ -350,6 +371,7 @@ export const useStore = create<AppState>()(
         filterCollab: state.filterCollab,
         search: state.search,
         calendars: state.calendars,
+        emailJsConfig: state.emailJsConfig,
       }),
       onRehydrateStorage: () => (state) => {
         if (state && typeof state.currentWeekStart === 'string') {
