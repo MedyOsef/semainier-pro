@@ -20,6 +20,7 @@ Le package `@emailjs/browser` a été installé avec succès.
 - Allez dans "Email Templates"
 - Cliquez sur "Create New Template"
 - Nommez-le (ex: "contact-form")
+- Dans le champ "To Email", utilisez la variable dynamique `{{to_email}}` au lieu de votre adresse fixe.
 - Personnalisez le contenu avec des variables:
   ```
   Bonjour {{to_name}},

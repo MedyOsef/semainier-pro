@@ -51,11 +51,23 @@ export const sendEmail = async (params: EmailParams, config?: EmailJSConfig) => 
       );
     }
 
+    if (!params.to_email) {
+      throw new Error('Destinataire manquant. Le champ to_email doit être défini.');
+    }
+
     if (config?.publicKey) {
       initEmailJS(config.publicKey);
     } else {
       initEmailJS(publicKey);
     }
+
+    console.debug('EmailJS send', {
+      serviceId,
+      templateId,
+      to_email: params.to_email,
+      subject: params.subject,
+      templateParams: params,
+    });
 
     const response = await emailjs.send(serviceId, templateId, params);
     return {

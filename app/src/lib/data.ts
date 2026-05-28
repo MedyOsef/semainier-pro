@@ -12,10 +12,7 @@ export const DEFAULT_CLIENTS: Client[] = [
 ];
 
 export const DEFAULT_COLLABORATORS: Collaborator[] = [
-  { id: 'col1', name: 'Amosse A.', role: 'Expert-comptable', email: 'amosse@cabinet.ci', color: '#4f6ef7' },
-  { id: 'col2', name: 'Diallo Aminata', role: 'Comptable senior', email: 'diallo@cabinet.ci', color: '#5a9b7d' },
-  { id: 'col3', name: 'Koné Ibrahim', role: 'Fiscaliste', email: 'kone@cabinet.ci', color: '#d4a24e' },
-  { id: 'col4', name: 'Traoré Marie', role: 'Assistante comptable', email: 'traore@cabinet.ci', color: '#8b5cf6' },
+  { id: 'col1', name: 'Medy Porgo', role: 'SecDevOps', email: 'medy.porgo@groupetasnim.com', color: '#4f6ef7' },
 ];
 
 export const SUGGESTIONS: { title: string; category: Task['category']; priority: Task['priority']; duration: number; desc: string }[] = [

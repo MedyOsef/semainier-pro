@@ -258,6 +258,12 @@ export const useStore = create<AppState>()(
         const subject = `Relance: ${task.title}`;
         const config = get().emailJsConfig;
 
+        console.debug('sendReminder', {
+          collaborator: { id: collaboratorId, email: to_email, name: to_name },
+          task: { id: taskId, title: task.title },
+          emailJsConfig: { serviceId: config.serviceId, templateId: config.templateId },
+        });
+
         try {
           const result = await sendEmail(
             {
