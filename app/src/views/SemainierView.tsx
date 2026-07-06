@@ -27,9 +27,9 @@ function ScheduleEventCard({ task, onClick }: ScheduleEventProps) {
       }}
       onClick={onClick}
     >
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--txt2)]">{task.category}</span>
-        <span className="text-[10px] uppercase tracking-[0.15em] text-[var(--txt2)]">{task.status}</span>
+      <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--txt2)] whitespace-normal break-words">{task.category}</span>
+        <span className="text-[10px] uppercase tracking-[0.15em] text-[var(--txt2)] whitespace-normal break-words">{task.status}</span>
       </div>
       <div className="text-sm font-semibold text-[var(--txt)] mb-1">{task.title}</div>
       <div className="text-[11px] text-[var(--txt2)] mb-2">{task.startTime || 'Toute la journée'} · {task.duration}h</div>
